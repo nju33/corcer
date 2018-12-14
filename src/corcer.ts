@@ -41,9 +41,16 @@ export class DoughPart<T> {
   }
 }
 
+export type Dough<T> = (
+  x: number,
+  y: number,
+  xLength: number,
+  yLength: number,
+) => DoughPart<T>;
+
 export type Corcer<T> = (
   matrix: T[][],
-) => (x: number, y: number, xLength: number, yLength: number) => DoughPart<T>;
+) => Dough<T> & memoizee.Memoized<Dough<T>>;
 
 export const corcer = <T>(matrix: T[][]) =>
   memoizee((x: number, y: number, xLength: number, yLength: number) => {
