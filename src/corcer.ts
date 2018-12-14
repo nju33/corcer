@@ -1,7 +1,14 @@
 import memoizee from 'memoizee';
 
 export class DoughPart<T> {
-  constructor(public readonly matrix: T[][]) {}
+  /**
+   * @param matrix part of matrix (.)
+   * @param originalMatrix all (:::)
+   */
+  constructor(
+    public readonly matrix: T[][],
+    public readonly originalMatrix: T[][],
+  ) {}
 
   private uniq(items: T[]): T[] {
     return Array.from(
@@ -39,14 +46,38 @@ export class DoughPart<T> {
   test(diff: T[][]) {
     return this.matrix.toString() === diff.toString();
   }
+
+  /**
+   * @param x x index
+   * @param y y index
+   * @param newValue into value
+   */
+  replace(x: number, y: number, newValue: T): T[][] {
+    const result = this.originalMatrix.map(a => [...a]);
+    let i = 0;
+    const untilI = this.matrix.length;
+
+    while (i < untilI) {
+      let j = 0;
+      const untilJ = this.matrix[i].length;
+
+      while (j < untilJ) {
+        result[x + i][y + j] = newValue;
+        j++;
+      }
+      i++;
+    }
+
+    return result;
+  }
 }
 
-export type Dough<T> = (
+export type Dough<T> = ((
   x: number,
   y: number,
   xLength: number,
   yLength: number,
-) => DoughPart<T>;
+) => DoughPart<T>);
 
 export type Corcer<T> = (
   matrix: T[][],
@@ -61,5 +92,5 @@ export const corcer = <T>(matrix: T[][]) =>
       i++;
     }
 
-    return new DoughPart<T>(result);
+    return new DoughPart<T>(result, matrix);
   });

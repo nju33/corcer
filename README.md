@@ -27,4 +27,11 @@ expect(part.items).toMatchObject([0, 0, 0, 0]);
 expect(part.uniqItems).toMatchObject([0]);
 expect(part.uniqItemsInEach).toMatchObject([[0], [0]]);
 expect(part.test([[0, 0], [0, 0]])).toBeTruthy();
+expect(part.replace(2, 2, 1)).toMatchObject([
+  [1, 1, 1, 1, 1],
+  [1, 1, 1, 1, 1],
+  [1, 1, 1, 1, 1],
+  [1, 1, 1, 1, 1],
+  [1, 1, 1, 1, 1],
+]);
 ```
