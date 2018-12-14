@@ -1,4 +1,3 @@
-import {corcer} from './corcer';
-export {Corcer, Dough} from './corcer';
+import {Corcer} from './corcer';
 
-export default corcer;
+export default Corcer;

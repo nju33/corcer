@@ -1,16 +1,50 @@
-import memoizee from 'memoizee';
-
-export class DoughPart<T> {
+export class Corcer<T> {
   /**
-   * @param matrix part of matrix (.)
-   * @param originalMatrix all (:::)
+   * @param matrix ::
    */
   constructor(
     public readonly matrix: T[][],
-    public readonly originalMatrix: T[][],
+    public readonly ctx?: {
+      parent: Corcer<T>;
+      position: {x: number; y: number};
+    },
   ) {}
 
-  private uniq(items: T[]): T[] {
+  get rows(): number {
+    return this.matrix.length;
+  }
+
+  get columns(): number {
+    return this.matrix[0].length;
+  }
+
+  /**
+   * @param x1 upper x index ::
+   * @param y1 upper y index ::
+   * @param x2 lower x index ::
+   * @param y2 lower y index ::
+   */
+  lens(x1: number, y1: number, x2: number, y2: number): Corcer<T> {
+    const next: T[][] = Array.from(Array(x2 - x1)).map(() => []);
+
+    let i = 0;
+    while (i < x2 - x1) {
+      let j = 0;
+      while (j < y2 - y1) {
+        next[i][j] = this.matrix[x1 + i][y1 + j];
+        j++;
+      }
+
+      i++;
+    }
+
+    return new Corcer(next, {
+      parent: this,
+      position: {x: x1, y: y1},
+    });
+  }
+
+  uniq(items: T[]): T[] {
     return Array.from(
       items.reduce((list, item) => {
         list.add(item);
@@ -19,31 +53,29 @@ export class DoughPart<T> {
     );
   }
 
-  get items(): T[] {
-    return this.matrix.reduce(
+  getItems(opts: {uniq: boolean} = {uniq: true}): T[] {
+    const items = this.matrix.reduce(
       (result, line) => {
         return [...result, ...line];
       },
       [] as T[],
     );
+
+    if (opts.uniq) {
+      return this.uniq(items);
+    }
+    return items;
   }
 
-  get uniqItems(): T[] {
-    const items = this.items;
-    return this.uniq(items);
+  has(value: T) {
+    return this.getItems().indexOf(value) > -1;
   }
 
-  get uniqItemsInEach(): T[][] {
-    return this.matrix.reduce(
-      (result, line) => {
-        result.push(this.uniq(line));
-        return result;
-      },
-      [] as T[][],
-    );
-  }
+  test(diff: Corcer<T> | T[][]): boolean {
+    if (diff instanceof Corcer) {
+      return this.matrix.toString() === diff.matrix.toString();
+    }
 
-  test(diff: T[][]) {
     return this.matrix.toString() === diff.toString();
   }
 
@@ -52,45 +84,26 @@ export class DoughPart<T> {
    * @param y y index
    * @param newValue into value
    */
-  replace(x: number, y: number, newValue: T): T[][] {
-    const result = this.originalMatrix.map(a => [...a]);
-    let i = 0;
-    const untilI = this.matrix.length;
+  replaceTo(newValue: T, corcer: Corcer<T>): Corcer<T> {
+    if (this.ctx === undefined) {
+      throw new TypeError('`replace` is limited to a child corcer');
+    }
 
+    const result = corcer.matrix.map(a => [...a]);
+
+    let i = this.ctx.position.x;
+    const untilI = corcer.rows;
     while (i < untilI) {
-      let j = 0;
-      const untilJ = this.matrix[i].length;
-
+      let j = this.ctx.position.y;
+      const untilJ = corcer.columns;
       while (j < untilJ) {
-        result[x + i][y + j] = newValue;
+        result[i][j] = newValue;
         j++;
       }
+
       i++;
     }
 
-    return result;
+    return new Corcer(result);
   }
 }
-
-export type Dough<T> = ((
-  x: number,
-  y: number,
-  xLength: number,
-  yLength: number,
-) => DoughPart<T>);
-
-export type Corcer<T> = (
-  matrix: T[][],
-) => Dough<T> & memoizee.Memoized<Dough<T>>;
-
-export const corcer = <T>(matrix: T[][]) =>
-  memoizee((x: number, y: number, xLength: number, yLength: number) => {
-    const result: T[][] = [] as any;
-    let i = 0;
-    while (i < yLength) {
-      result.push(matrix[y + i].slice(x, x + xLength));
-      i++;
-    }
-
-    return new DoughPart<T>(result, matrix);
-  });
