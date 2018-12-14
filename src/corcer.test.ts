@@ -1,4 +1,4 @@
-import {corcer, Corcer} from './corcer';
+import {Corcer} from './corcer';
 
 const MATRIX = [
   [1, 1, 1, 1, 1],
@@ -8,25 +8,24 @@ const MATRIX = [
   [1, 1, 1, 1, 1],
 ];
 
-let dough: ReturnType<Corcer<number>>;
+let corcer: Corcer<number>;
 
 beforeEach(() => {
-  dough = corcer(MATRIX);
+  corcer = new Corcer(MATRIX);
 });
 
 test('basis', () => {
-  const part = dough(2, 2, 2, 2);
-
-  expect(part.matrix).toMatchObject([[0, 0], [0, 0]]);
-  expect(part.items).toMatchObject([0, 0, 0, 0]);
-  expect(part.uniqItems).toMatchObject([0]);
-  expect(part.uniqItemsInEach).toMatchObject([[0], [0]]);
-  expect(part.test([[0, 0], [0, 0]])).toBeTruthy();
-  expect(part.replace(2, 2, 1)).toMatchObject([
-    [1, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1],
-  ]);
+  expect(corcer.matrix).toMatchObject(MATRIX);
+  expect(corcer.lens(2, 2, 2, 2).matrix).toMatchObject([[0, 0], [0, 0]]);
+  // expect(corcer.getItems()).toMatchObject([0, 0, 0, 0]);
+  // expect(corcer.getItems({uniq: true})).toMatchObject([0]);
+  // expect(corcer.uniq([0, 0, 0, 0])).toMatchObject([0]);
+  // expect(corcer.lens(2, 2, 2, 2).test([[0, 0], [0, 0]])).toBeTruthy();
+  // expect(corcer.replace(2, 2, 1)).toMatchObject([
+  //   [1, 1, 1, 1, 1],
+  //   [1, 1, 1, 1, 1],
+  //   [1, 1, 1, 1, 1],
+  //   [1, 1, 1, 1, 1],
+  //   [1, 1, 1, 1, 1],
+  // ]);
 });
