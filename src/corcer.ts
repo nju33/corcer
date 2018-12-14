@@ -2,7 +2,13 @@ export class Corcer<T> {
   /**
    * @param matrix ::
    */
-  constructor(public readonly matrix: T[][]) {}
+  constructor(
+    public readonly matrix: T[][],
+    public readonly ctx?: {
+      parent: Corcer<T>;
+      position: {x: number; y: number};
+    },
+  ) {}
 
   get rows(): number {
     return this.matrix.length;
@@ -19,14 +25,12 @@ export class Corcer<T> {
    * @param y2 lower y index ::
    */
   lens(x1: number, y1: number, x2: number, y2: number): Corcer<T> {
-    const next: T[][] = [...Array(x2 - x1).map(() => [])];
+    const next: T[][] = Array.from(Array(x2 - x1)).map(() => []);
 
-    let i = x1;
-    const untilI = x2;
-    while (i < untilI) {
-      let j = y1;
-      const untilJ = y2;
-      while (j < untilJ) {
+    let i = 0;
+    while (i < x2 - x1) {
+      let j = 0;
+      while (j < y2 - y1) {
         next[i][j] = this.matrix[x1 + i][y1 + j];
         j++;
       }
@@ -34,7 +38,10 @@ export class Corcer<T> {
       i++;
     }
 
-    return new Corcer(next);
+    return new Corcer(next, {
+      parent: this,
+      position: {x: x1, y: y1},
+    });
   }
 
   uniq(items: T[]): T[] {
@@ -60,6 +67,10 @@ export class Corcer<T> {
     return items;
   }
 
+  has(value: T) {
+    return this.getItems().indexOf(value) > -1;
+  }
+
   test(diff: Corcer<T> | T[][]): boolean {
     if (diff instanceof Corcer) {
       return this.matrix.toString() === diff.matrix.toString();
@@ -73,16 +84,20 @@ export class Corcer<T> {
    * @param y y index
    * @param newValue into value
    */
-  replace(x: number, y: number, newValue: T): Corcer<T> {
-    const result = this.matrix.map(a => [...a]);
+  replaceTo(newValue: T, corcer: Corcer<T>): Corcer<T> {
+    if (this.ctx === undefined) {
+      throw new TypeError('`replace` is limited to a child corcer');
+    }
 
-    let i = 0;
-    const untilI = this.matrix.length;
+    const result = corcer.matrix.map(a => [...a]);
+
+    let i = this.ctx.position.x;
+    const untilI = corcer.rows;
     while (i < untilI) {
-      let j = 0;
-      const untilJ = this.matrix[i].length;
+      let j = this.ctx.position.y;
+      const untilJ = corcer.columns;
       while (j < untilJ) {
-        result[x + i][y + j] = newValue;
+        result[i][j] = newValue;
         j++;
       }
 
