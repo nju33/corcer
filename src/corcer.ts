@@ -130,7 +130,7 @@ export class Corcer<T> {
 
     let currentIndex = 0;
     let result: {x: number; y: number} | undefined;
-    while (currentIndex < this.matrix.length) {
+    top: while (currentIndex < this.matrix.length) {
       const lineString = matrix[0].join('');
       const re = new RegExp(lineString, 'g');
       while (re.exec(this.matrix[currentIndex].join(''))) {
@@ -144,10 +144,10 @@ export class Corcer<T> {
         let count = 1;
         while (count < matrix.length) {
           if (
-            startIndex !==
             this.matrix[currentIndex + count]
               .join('')
-              .indexOf(matrix[count].join(''))
+              .slice(startIndex, startIndex + matrix[count].length) !==
+            matrix[count].join('')
           ) {
             break;
           }
@@ -156,12 +156,13 @@ export class Corcer<T> {
 
           if (count === matrix.length) {
             result = {x: startIndex, y: currentIndex};
+            break top;
           }
         }
       }
 
       if (result !== undefined) {
-        break;
+        break top;
       }
 
       currentIndex++;

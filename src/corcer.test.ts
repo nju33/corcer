@@ -54,11 +54,15 @@ test('basis', () => {
 });
 
 test('Corcer.transpose', () => {
-  expect(Corcer.transpose([[1, 1, 1], [1, 1, 1], [1]])).toMatchObject([
+  const original = [[1, 1, 1], [1, 1, 1], [1]];
+  const transposed = Corcer.transpose(original);
+
+  expect(transposed).toMatchObject([
     [1, 1, 1],
     [1, 1],
     [1, 1],
   ]);
+  expect(Corcer.transpose(transposed)).toMatchObject(original);
 });
 
 test('Corcer.flat', () => {
