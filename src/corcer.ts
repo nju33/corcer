@@ -12,6 +12,27 @@ export class Corcer<T> {
     return items;
   }
 
+  static transpose<T>(items: T[][]): T[][] {
+    const result: T[][] = [];
+
+    let i = 0;
+    while (i < items.length) {
+      let j = 0;
+      while (j < items[i].length) {
+        if (result[j] === undefined) {
+          result[j] = [];
+        }
+        result[j][i] = items[i][j];
+
+        j++;
+      }
+
+      i++;
+    }
+
+    return result;
+  }
+
   static uniq<T>(items: T[]): T[] {
     return Array.from(
       items.reduce((list, item) => list.add(item), new Set<T>()),
@@ -43,7 +64,7 @@ export class Corcer<T> {
    * @param x2 lower x index ::
    * @param y2 lower y index ::
    */
-  lens(x1: number, y1: number, x2: number, y2: number): Corcer<T> {
+  crop(x1: number, y1: number, x2: number, y2: number): Corcer<T> {
     const next: T[][] = Array.from(Array(x2 - x1)).map(() => []);
 
     let i = 0;
@@ -108,13 +129,17 @@ export class Corcer<T> {
     }
 
     let currentIndex = 0;
-    const matrixLength = this.matrix.length;
     let result: {x: number; y: number} | undefined;
-    while (currentIndex < matrixLength) {
+    while (currentIndex < this.matrix.length) {
       const lineString = matrix[0].join('');
       const re = new RegExp(lineString, 'g');
       while (re.exec(this.matrix[currentIndex].join(''))) {
         const startIndex = re.lastIndex - lineString.length;
+
+        if (matrix.length === 1) {
+          result = {x: startIndex, y: currentIndex};
+          break;
+        }
 
         let count = 1;
         while (count < matrix.length) {
@@ -174,13 +199,11 @@ export class Corcer<T> {
 
     const result = corcer.matrix.map(a => [...a]);
 
-    let i = this.ctx.position.x;
-    const untilI = corcer.rows;
-    while (i < untilI) {
-      let j = this.ctx.position.y;
-      const untilJ = corcer.columns;
-      while (j < untilJ) {
-        result[j][i] = newValue;
+    let i = 0;
+    while (i < this.columns) {
+      let j = 0;
+      while (j < this.rows) {
+        result[this.ctx.position.y + j][this.ctx.position.x + i] = newValue;
         j++;
       }
 

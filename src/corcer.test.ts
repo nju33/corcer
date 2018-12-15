@@ -18,7 +18,7 @@ beforeEach(() => {
 
 test('basis', () => {
   expect(corcer.matrix).toMatchObject(MATRIX);
-  expect(corcer.lens(4, 2, 6, 4).matrix).toMatchObject([[0, 0], [0, 0]]);
+  expect(corcer.crop(4, 2, 6, 4).matrix).toMatchObject([[0, 0], [0, 0]]);
 
   expect(corcer.search([[0, 0], [0, 0]])).not.toBeUndefined();
   // tslint:disable-next-line:no-non-null-assertion
@@ -41,8 +41,8 @@ test('basis', () => {
   expect(Corcer.uniq([0, 0, 0, 0])).toMatchObject([0]);
   expect(corcer.has(1)).toBeTruthy();
 
-  expect(corcer.lens(4, 2, 6, 4).test([[0, 0], [0, 0]])).toBeTruthy();
-  expect(corcer.lens(4, 2, 6, 4).replaceTo(1, corcer).matrix).toMatchObject([
+  expect(corcer.crop(4, 2, 6, 4).test([[0, 0], [0, 0]])).toBeTruthy();
+  expect(corcer.crop(4, 2, 6, 4).replaceTo(1, corcer).matrix).toMatchObject([
     [1, 1, 1, 1, 1, 1, 1],
     [1, 1, 1, 1, 1, 1, 1],
     [1, 0, 0, 1, 1, 1, 1],
@@ -50,6 +50,14 @@ test('basis', () => {
     [1, 1, 1, 1, 1, 1, 1],
     [1, 1, 1, 1, 1, 1, 1],
     [1, 1, 1, 1, 1, 1, 1],
+  ]);
+});
+
+test('Corcer.transpose', () => {
+  expect(Corcer.transpose([[1, 1, 1], [1, 1, 1], [1]])).toMatchObject([
+    [1, 1, 1],
+    [1, 1],
+    [1, 1],
   ]);
 });
 
