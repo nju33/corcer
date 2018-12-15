@@ -37,7 +37,7 @@ export class Corcer<T> {
     while (i < x2 - x1) {
       let j = 0;
       while (j < y2 - y1) {
-        next[i][j] = this.matrix[x1 + i][y1 + j];
+        next[i][j] = this.matrix[y1 + j][x1 + i];
         j++;
       }
 
@@ -68,12 +68,87 @@ export class Corcer<T> {
     return this.getItems().indexOf(value) > -1;
   }
 
+  /**
+   * :::::     :::::
+   * ::::: === :::::
+   * :::::     :::::
+   */
   test(diff: Corcer<T> | T[][]): boolean {
     if (diff instanceof Corcer) {
       return this.matrix.toString() === diff.matrix.toString();
     }
 
     return this.matrix.toString() === diff.toString();
+  }
+
+  /**
+   *      :::::
+   * :: ⊆ :::::
+   *      :::::
+   */
+  search(diff: Corcer<T> | T[][]): Corcer<T> | undefined {
+    let matrix: T[][];
+    if (diff instanceof Corcer) {
+      matrix = diff.matrix;
+    } else {
+      matrix = diff;
+    }
+
+    let currentIndex = 0;
+    const matrixLength = this.matrix.length;
+    let result: {x: number; y: number} | undefined;
+    while (currentIndex < matrixLength) {
+      const lineString = matrix[0].join('');
+      const re = new RegExp(lineString, 'g');
+      while (re.exec(this.matrix[currentIndex].join(''))) {
+        const startIndex = re.lastIndex - lineString.length;
+
+        let count = 1;
+        while (count < matrix.length) {
+          // const index = currentIndex + count;
+
+          if (
+            startIndex !==
+            this.matrix[currentIndex + count]
+              .join('')
+              .indexOf(matrix[count].join(''))
+          ) {
+            break;
+          }
+
+          count++;
+
+          if (count === matrix.length) {
+            result = {x: startIndex, y: currentIndex};
+          }
+        }
+      }
+
+      if (result !== undefined) {
+        break;
+      }
+
+      currentIndex++;
+    }
+
+    if (result === undefined) {
+      return;
+    }
+
+    // tslint:disable:no-non-null-assertion
+    return new Corcer(
+      Array.from(Array(matrix.length)).map((_, i) => {
+        return this.matrix[result!.y + i].slice(
+          result!.x,
+          result!.x + matrix[i].length,
+        );
+      }),
+      {
+        parent: this,
+        position: result,
+      },
+    );
+    // tslint:disable:no-non-null-assertion
   }
 
   /**
@@ -94,7 +169,7 @@ export class Corcer<T> {
       let j = this.ctx.position.y;
       const untilJ = corcer.columns;
       while (j < untilJ) {
-        result[i][j] = newValue;
+        result[j][i] = newValue;
         j++;
       }
 
