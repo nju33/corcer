@@ -26,11 +26,11 @@ expect(corcer.lens(2, 2, 4, 4).matrix).toMatchObject([[0, 0], [0, 0]]);
 
 expect(corcer.getItems()).toMatchObject([1, 0]);
 expect(corcer.getItems({uniq: false})).toMatchObject([
-  ...MATRIX[0],
-  ...MATRIX[1],
-  ...MATRIX[2],
-  ...MATRIX[3],
-  ...MATRIX[4],
+  ...matrix[0],
+  ...matrix[1],
+  ...matrix[2],
+  ...matrix[3],
+  ...matrix[4],
 ]);
 expect(corcer.uniq([0, 0, 0, 0])).toMatchObject([0]);
 expect(corcer.has(1)).toBeTruthy();
