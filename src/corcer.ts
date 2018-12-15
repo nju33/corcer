@@ -1,4 +1,17 @@
 export class Corcer<T> {
+  static flat<T>(items: T[][], pad: T): T[][] {
+    const sizes = items.map(item => item.length);
+    const maxSize = Math.max(...sizes);
+
+    items.forEach(item => {
+      if (item.length < maxSize) {
+        item.push(...Array.from(Array(maxSize - item.length)).map(() => pad));
+      }
+    });
+
+    return items;
+  }
+
   static uniq<T>(items: T[]): T[] {
     return Array.from(
       items.reduce((list, item) => list.add(item), new Set<T>()),
