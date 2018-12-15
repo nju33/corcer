@@ -118,8 +118,6 @@ export class Corcer<T> {
 
         let count = 1;
         while (count < matrix.length) {
-          // const index = currentIndex + count;
-
           if (
             startIndex !==
             this.matrix[currentIndex + count]
