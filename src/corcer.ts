@@ -1,4 +1,10 @@
 export class Corcer<T> {
+  static uniq<T>(items: T[]): T[] {
+    return Array.from(
+      items.reduce((list, item) => list.add(item), new Set<T>()),
+    );
+  }
+
   /**
    * @param matrix ::
    */
@@ -44,15 +50,6 @@ export class Corcer<T> {
     });
   }
 
-  uniq(items: T[]): T[] {
-    return Array.from(
-      items.reduce((list, item) => {
-        list.add(item);
-        return list;
-      }, new Set<T>()),
-    );
-  }
-
   getItems(opts: {uniq: boolean} = {uniq: true}): T[] {
     const items = this.matrix.reduce(
       (result, line) => {
@@ -62,7 +59,7 @@ export class Corcer<T> {
     );
 
     if (opts.uniq) {
-      return this.uniq(items);
+      return Corcer.uniq(items);
     }
     return items;
   }
