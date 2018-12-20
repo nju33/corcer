@@ -1,7 +1,7 @@
 # corcer (corner cercle)
 
 [![typescript](https://badgen.net/badge//typescript/0376c6?icon=npm)](https://www.typescriptlang.org/)
-![ci:status](https://badgen.net/circleci/github/nju33/corcer)
+[![ci:status](https://badgen.net/circleci/github/nju33/corcer)](https://circleci.com/gh/nju33/corcer)
 [![document:typedoc](https://badgen.net/badge/document/typedoc/9602ff)](https://docs--corcer.netlify.com/)
 ![license:mit](https://badgen.net/github/license/micromatch/micromatch)
 [![browsersl.ist](https://badgen.net/badge/browserslist/chrome,edge/ffd539?list=1)](https://browserl.ist/?q=last+1+chrome+version%2C+last+1+edge+version)
