@@ -26,7 +26,7 @@
   "devDependencies": {
     "@geekcojp/tslint-config": "0.2.1",
     "@types/jest": "23.3.14",
-    "@types/memoizee": "0.4.3",
+    "@types/memoizee": "0.4.4",
     "jest": "23.6.0",
     "prettier": "1.19.1",
     "renovate-config-nju33": "0.0.1",
